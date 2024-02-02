@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "dependencies": {
+    "@next/bundle-analyzer": "latest",
+    "@next/third-parties": "latest",
+    "@heroicons/react": "latest",
+    "autoprefixer": "latest",
+    "classnames": "latest",
+    "next": "latest",
+    "postcss": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwindcss": "latest"
+  }
+}
