@@ -1,7 +1,7 @@
 import { Button } from '@/lib/button'
 import { Panel } from '@/lib/panel'
 
-export default function HuTouPage() {
+export default function ConnectPage() {
   return (
     <div className='text-2xl'>
       <Panel>
