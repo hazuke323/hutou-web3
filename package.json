@@ -13,6 +13,7 @@
     "react-dom": "latest",
     "wagmi": "latest",
     "viem": "latest",
+    "@tanstack/react-query": "latest",
     "web3": "latest",
     "ethers": "latest",
     "tailwindcss": "latest"
