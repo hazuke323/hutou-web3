@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 import { bsc, bscTestnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
+import Dialog, { dialogContext } from '@/component/dialog'
+import { useState } from 'react'
 
 const config = createConfig({
   chains: [bsc],
@@ -60,11 +61,29 @@ function MainContent({ children }) {
 }
 
 export default function CustomWrapper({ children }) {
+  const [ dialog, setDialog ] = useState(null)
+  // const [ dialogEnabled, setDialogEnabled ] = useState(false)
+
+  const dialogProviderValue = {
+    async showDialog({ content }) {
+      // setDialogEnabled(true)
+      return new Promise((resolve) => {
+        setDialog({
+          content,
+          resolve: (reason) => {
+            setDialog(null)
+            resolve({ reason })
+          }
+        })
+      })
+    }
+  }
 
   return (
     <MetaMaskProvider>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
+          <dialogContext.Provider value={dialogProviderValue}>
           <header className='flex justify-between relative mb-8'>
             <div className='flex gap-3 items-center'>
               <div className='group relative'>
@@ -92,6 +111,10 @@ export default function CustomWrapper({ children }) {
             <WalletWrapper />
           </header>
           <MainContent>{ children }</MainContent>
+          { dialog && (
+            <Dialog dialog={ dialog } />
+          ) }
+          </dialogContext.Provider>
         </QueryClientProvider>
       </WagmiProvider>
     </MetaMaskProvider>

@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/lib/button'
 import { Panel } from '@/lib/panel'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { BrowserProvider, Contract, ethers, formatEther, formatUnits } from 'ethers'
 import { useMetaMask } from 'metamask-react'
 import { useAccount, useBalance, useReadContract, useWriteContract } from 'wagmi'
@@ -11,6 +11,7 @@ import StakeDialog from '@/component/stake-dialog'
 
 import usdtabi from '@/config/usdtabi.json'
 import { Contract_Addr, Contract_USDT_Addr } from '@/config/contract'
+import { dialogContext } from '@/component/dialog'
 
 // const web3 = new Web3(
 //   new Web3.providers.HttpProvider('https://go.getblock.io/541835f2ac774d30bdb437bc4d21cab5')
@@ -142,6 +143,7 @@ export default function USDTPage() {
   const [ userApproved, setUserApproved ] = useState(0)
   const [ userDeposited, setUserDeposited ] = useState(0)
   const [ userInterest, setUserInterest ] = useState(0)
+  const { showDialog } = useContext(dialogContext)
 
   // const { data: total } = useReadContract({
   //   address,
@@ -419,7 +421,14 @@ export default function USDTPage() {
         </div>
       </Panel>
       <div className='flex flex-col items-center justify-center'>
-        <Button className='text-[1.625rem] !px-8'>领取收益</Button>
+        <Button className='text-[1.625rem] !px-8'
+          onClick={ async () => {
+            // 对话框调用case，返回一个Promise对象，关闭对话框时 resolve
+            await showDialog({ content: <div>内容1</div> })
+            await showDialog({ content: '内容2 失败' })
+            await showDialog({ content: '内容3 123123' })
+          } }
+        >领取收益</Button>
         {/* <div className='text-[1.375rem] mt-4'>{String(500000n - (total || 0n) / BigInt(1e18))}/500000 USDT</div> */}
         <div className='text-[1.375rem] mt-4'>{String(maxDeposit - deposited)}/{ maxDeposit } USDT</div>
         <div className='text-[1.375rem] mb-4'>当前质押量/质押量上限</div>
