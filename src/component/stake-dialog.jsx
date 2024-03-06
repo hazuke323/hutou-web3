@@ -2,10 +2,17 @@ import { SVGIconClose } from '@/lib/svg-icons'
 import classNames from 'classnames'
 import { useState, useRef } from 'react'
 
-export default function StakeDialog({ onClose = () => {} }) {
+export default function StakeDialog(
+    {
+      onClose = () => {}
+      , info = {}
+      , onStake
+      , onWithdraw
+    }
+  ) {
   const [ type, setType ] = useState(0)
-  const [ value0, setValue0 ] = useState(1000)
-  const [ value1, setValue1 ] = useState(0.0001)
+  const [ value0, setValue0 ] = useState(info.bal)
+  const [ value1, setValue1 ] = useState(info.deposited)
   const inputRef = useRef()
 
   return (
@@ -34,7 +41,8 @@ export default function StakeDialog({ onClose = () => {} }) {
             </div>
             <div className='flex justify-between'>
               <div className='text-white text-sm'>0.0000</div>
-              <div className='text-white text-sm'>HUTOU/USDT  LP</div>
+              {/* <div className='text-white text-sm'>HUTOU/USDT  LP</div> */}
+              <div className='text-white text-sm'>{ info.symbol }</div>
             </div>
             <div className='flex gap-4'>
               <button className='border rounded border-[#7586D6] text-black flex-1'
@@ -53,7 +61,8 @@ export default function StakeDialog({ onClose = () => {} }) {
           </div>
           <div className='flex justify-between'>
             <div className='text-white text-sm'>已质押</div>
-            <div className='text-white text-sm'>{Number(0.0000008008).toFixed(9)} EOS/USDT LP</div>
+            {/* <div className='text-white text-sm'>{Number(0.0000008008).toFixed(9)} EOS/USDT LP</div> */}
+            <div className='text-white text-sm'>{ info.deposited } { info.symbol }</div>
           </div>
           <div className='flex'>
             <input
@@ -63,6 +72,11 @@ export default function StakeDialog({ onClose = () => {} }) {
               placeholder='请输入数量'
               defaultValue={''}
             />
+          </div>
+          <div className='flex'>
+            <button className='border rounded border-[#7586D6] text-black'
+              onClick={ () => type ? onWithdraw() : onStake(inputRef.current.value) }
+            >确认</button>
           </div>
         </div>
         <div className='absolute top-4 right-6 text-black cursor-pointer' onClick={() => { onClose() }} >

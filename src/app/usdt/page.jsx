@@ -2,7 +2,7 @@
 import { Button } from '@/lib/button'
 import { Panel } from '@/lib/panel'
 import { useEffect, useState, useContext } from 'react'
-import { BrowserProvider, Contract, ethers, formatEther, formatUnits } from 'ethers'
+import { BrowserProvider, Contract, ethers, formatEther, formatUnits, parseEther } from 'ethers'
 import { useMetaMask } from 'metamask-react'
 import { useAccount, useBalance, useReadContract, useWriteContract } from 'wagmi'
 import abi from '../abi.json'
@@ -140,6 +140,7 @@ export default function USDTPage() {
   const [ showStakeDialog, setShowStakeDialog ] = useState(false)
   const [ maxDeposit, setMaxDeposit ] = useState(50000)
   const [ deposited, setDeposited ] = useState(0)
+  const [ userTokenBal, setUserTokenBal ] = useState(0)
   const [ userApproved, setUserApproved ] = useState(0)
   const [ userDeposited, setUserDeposited ] = useState(0)
   const [ userInterest, setUserInterest ] = useState(0)
@@ -274,7 +275,7 @@ export default function USDTPage() {
         contract.usdtBalanceOf(account)
           .then(res => {
             console.log('res contract get', res, formatUnits(res))
-            setUserUsdtBal(formatUnits(res))
+            setUserTokenBal(formatUnits(res))
           })
       }, err => {
         console.log('err', err)
@@ -306,6 +307,11 @@ export default function USDTPage() {
         contract.approve(Contract_Addr, '115792089237316195423570985008687907853269984665640564039457584007913129639935')
           .then(res => {
             console.log('授权成功', res)
+            
+            // 更新授权数量
+            getTokenAllowanceWei()
+
+            showDialog({content: '授权成功'})
           })
       }, err => {
         console.log('err', err)
@@ -318,9 +324,17 @@ export default function USDTPage() {
   function tokenDeposit(amount) {
     getContract()
       .then(contract => {
-        contract.stakeUSDT(formatEther(amount))
+        contract.stakeUSDT(parseEther(String(amount)))
           .then(res => {
-            console.log('res')
+            console.log('res', res)
+
+            // 更新抵押数量
+            getUserDeposit()
+            // 更新页面数据
+            getTokenDeposited()
+            getTokenBalance()
+
+            showDialog({content: '抵押成功'})
           })
       }, err => {
         console.log('err', err)
@@ -362,12 +376,40 @@ export default function USDTPage() {
       })
   }
 
+  function withdrawInterest() {
+    getContract()
+    .then(contract => {
+      contract.withdrawInterest()
+        .then(res => {
+          console.log('withdraw interest', res)
+
+          // 更新收益数据
+          setUserInterest(0)
+
+          showDialog({content: '提取收益成功'})
+        }, err => {
+          console.log('err', err)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    })
+  }
+
   function withdraw() {
     getContract()
       .then(contract => {
         contract.withdrawUSDT()
           .then(res => {
             console.log('withdraw', res)
+
+            // 更新页面数据
+            setUserDeposited(0)
+            setUserInterest(0)
+            getTokenDeposited()
+            getTokenBalance()
+
+            showDialog({content: '提取成功'})
           })
       }, err => {
         console.log('err', err)
@@ -377,16 +419,12 @@ export default function USDTPage() {
       })
   }
 
-  function ttt() {
-    getTokenMaxDeposit()
-    
-    getTokenBalance()
-    getTokenAllowanceWei()
-
-    getTokenDeposited()
-
-    getUserDeposit()
-    getUserInterest()
+  function getStakeInfo() {
+    return {
+      symbol: 'USDT'
+      , bal: userTokenBal
+      , deposited: userDeposited
+    }
   }
 
   return (
@@ -399,19 +437,11 @@ export default function USDTPage() {
         <div className='text-bg mb-4 text-lg'>APR: {14.6}%</div>
         <div className='flex gap-4'>
           <Button className='text-2xl'
-            onClick={ () => { userApproved ? setShowStakeDialog(true) : tokenApprove() } }
+            onClick={ () => { userApproved > 0 ? setShowStakeDialog(true) : tokenApprove() } }
           >{userApproved > 0 ? '质押USDT' : '授权' }</Button>
           <Button className='text-2xl'
             onClick={ () => { setShowStakeDialog(true) } }
           >解锁USDT</Button>
-
-          <br />
-
-          <Button className='text-2xl'
-            onClick={ () => { ttt() } }
-          >测试</Button>
-
-
         </div>
       </div>
       <Panel className='text-[1.375rem]'>
@@ -424,9 +454,10 @@ export default function USDTPage() {
         <Button className='text-[1.625rem] !px-8'
           onClick={ async () => {
             // 对话框调用case，返回一个Promise对象，关闭对话框时 resolve
-            await showDialog({ content: <div>内容1</div> })
-            await showDialog({ content: '内容2 失败' })
-            await showDialog({ content: '内容3 123123' })
+            // await showDialog({ content: <div>内容1</div> })
+            // await showDialog({ content: '内容2 失败' })
+            // await showDialog({ content: '内容3 123123' })
+            withdrawInterest()
           } }
         >领取收益</Button>
         {/* <div className='text-[1.375rem] mt-4'>{String(500000n - (total || 0n) / BigInt(1e18))}/500000 USDT</div> */}
@@ -435,6 +466,7 @@ export default function USDTPage() {
         <div className='text-lg my-1'>质押后须7天才能取回，请注意控制风险</div>
       </div>
       { showStakeDialog && <StakeDialog
+          info={ getStakeInfo() }
           onClose={ () => setShowStakeDialog(false) }
           onStake={ (amount) => tokenDeposit(amount) }
           onWithdraw={ () => withdraw() }
