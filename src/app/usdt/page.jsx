@@ -140,9 +140,11 @@ export default function USDTPage() {
   const [ showStakeDialog, setShowStakeDialog ] = useState(false)
   const [ maxDeposit, setMaxDeposit ] = useState(50000)
   const [ deposited, setDeposited ] = useState(0)
+  const [ duration, setDuration ] = useState(7*86400)
   const [ userTokenBal, setUserTokenBal ] = useState(0)
   const [ userApproved, setUserApproved ] = useState(0)
   const [ userDeposited, setUserDeposited ] = useState(0)
+  const [ userDepositTime, setUserDepositTime ] = useState(Math.floor(Date.now() / 1000))
   const [ userInterest, setUserInterest ] = useState(0)
   const { showDialog } = useContext(dialogContext)
 
@@ -199,6 +201,9 @@ export default function USDTPage() {
 
     getUserDeposit()
     getUserInterest()
+
+    getDuration()
+    getDepositStartTimestamp()
   }, [account])
 
   function getContract() {
@@ -333,6 +338,7 @@ export default function USDTPage() {
             // 更新页面数据
             getTokenDeposited()
             getTokenBalance()
+            getDepositStartTimestamp()
 
             showDialog({content: '抵押成功'})
           })
@@ -396,7 +402,41 @@ export default function USDTPage() {
     })
   }
 
+  function getDuration() {
+    getContract()
+      .then(contract => {
+        contract.staking_duration()
+          .then(res => {
+            setDuration(Number(res))
+          }, err => {
+            console.log('err', err)
+          })
+          .catch(e => {
+            console.log('e', e)
+          })
+      })
+  }
+
+  function getDepositStartTimestamp() {
+    getContract()
+      .then(contract => {
+        contract.staking_start_times(account)
+          .then(res => {
+            setUserDepositTime(Number(res))
+          }, err => {
+            console.log('err', err)
+          })
+          .catch(e => {
+            console.log('e', e)
+          })
+      })
+  }
+
   function withdraw() {
+    if (Math.floor(Math.floor(Date.now() / 1000)) - userDepositTime < duration) {
+      showDialog({content: '抵押时间不足'})
+      return
+    }
     getContract()
       .then(contract => {
         contract.withdrawUSDT()
