@@ -56,7 +56,7 @@ function WalletWrapper() {
 
 function MainContent({ children }) {
   const { status } = useMetaMask()
-  if(status === 'connected') return children
+  if(status === 'connected' || globalThis.location.pathname === '/') return children
   return <ConnectPage />
 }
 
@@ -91,7 +91,7 @@ export default function CustomWrapper({ children }) {
                 <menu className='group-hover:-translate-x-8 absolute z-40 left-0 -top-14 pt-24 text-2xl h-screen transition-transform ease-out -translate-x-[150%]'>
                   <div className='h-full bg-black'>
                     <ul className='flex gap-8 flex-col p-8 pt-20 pr-16'>
-                      <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>HuTOU挖矿</Link></li>
+                      <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>Hutou挖矿</Link></li>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/pslp'>LP质押分红</Link></li>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/usdt'>USDT理财</Link></li>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>社区</Link></li>

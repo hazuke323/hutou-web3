@@ -40,7 +40,14 @@ export default function StakeDialog(
               <div className='text-white text-sm'>{ type ? `已质押：${value1}` : `余额：${value0}` }</div>
             </div>
             <div className='flex justify-between'>
-              <div className='text-white text-sm'>0.0000</div>
+              <div className='text-white text-sm'>
+                <input
+                  ref={inputRef}
+                  className='text-white text-sm bg-transparent'
+                  type='number'
+                  defaultValue={''}
+                />
+              </div>
               {/* <div className='text-white text-sm'>HUTOU/USDT  LP</div> */}
               <div className='text-white text-sm'>{ info.symbol }</div>
             </div>
@@ -65,18 +72,13 @@ export default function StakeDialog(
             <div className='text-white text-sm'>{ info.deposited } { info.symbol }</div>
           </div>
           <div className='flex'>
-            <input
-              ref={inputRef}
-              className='text-xl py-1 text-white placeholder:text-[#ACBADC] block bg-[#7586D6] rounded text-center w-full'
-              type='number'
-              placeholder='请输入数量'
-              defaultValue={''}
-            />
-          </div>
-          <div className='flex'>
-            <button className='border rounded border-[#7586D6] text-black'
+            <button className='text-xl py-1 text-white placeholder:text-[#ACBADC] block bg-[#7586D6] rounded text-center w-full'
               onClick={ () => type ? onWithdraw() : onStake(inputRef.current.value) }
             >确认</button>
+            {/*  */}
+          </div>
+          <div className='flex'>
+
           </div>
         </div>
         <div className='absolute top-4 right-6 text-black cursor-pointer' onClick={() => { onClose() }} >
