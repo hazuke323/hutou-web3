@@ -24,15 +24,15 @@ export default function HuTouPage() {
             </div>
             <div className='flex justify-start items-start text-lg'>
               <div className='text-nowrap text-left font-black text-lg w-36 flex-none'>精度：</div>
-              <div className='text-left'>16</div>
+              <div className='text-left'>18</div>
             </div>
             <div className='flex justify-start items-start text-lg'>
               <div className='text-nowrap text-left font-black text-lg w-36 flex-none'>税收和燃烧机制：</div>
               <div className='text-left'>买卖税5%
-                <div>0.5%税 黑洞销</div>
-                <div>1.0%税 进入营销钱</div>
-                <div>1.5%税 回流底</div>
-                <div>2%税 用于hutou/usdt的LP分</div>
+                <div>0.5%税 黑洞销毁</div>
+                <div>1.0%税 进入营销钱包</div>
+                <div>1.5%税 回流底池</div>
+                <div>2%税 用于hutou/usdt的LP分红</div>
               </div>
             </div>
           </div>

@@ -4,6 +4,10 @@ import { Panel } from '@/lib/panel'
 export default function HuTouPage() {
   return (
     <div className='text-2xl'>
+      <Panel>
+        质押HUTOU以赢得<br/>
+        HUTOU奖励
+      </Panel>
       <div className='flex flex-col items-center justify-center my-4'>
         <div className='flex gap-4'>
           <Button className='text-2xl'>stake</Button>
