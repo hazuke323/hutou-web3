@@ -95,7 +95,7 @@ export default function CustomWrapper({ children }) {
                   <div className='h-full bg-black'>
                     <ul className='flex gap-8 flex-col p-8 pt-20 pr-16'>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>Hutou挖矿</Link></li>
-                      <li className='cursor-pointer'><Link className='whitespace-nowrap' target='_blank' href='https://pancakeswap.finance/swap?inputCurrency=0xBC470E3d506df49e3498Dac3Df57d9DbB746CAa6'>LP质押分红</Link></li>
+                      <li className='cursor-pointer'><Link className='whitespace-nowrap' target='_blank' href='https://pancakeswap.finance/swap?inputCurrency=0xBC470E3d506df49e3498Dac3Df57d9DbB746CAa6'>购买Hutou</Link></li>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/usdt'>USDT理财</Link></li>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/community'>社区</Link></li>
                       {/* <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>合约地址</Link></li> */}
