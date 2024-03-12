@@ -8,6 +8,7 @@ import { bsc, bscTestnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Dialog, { dialogContext } from '@/component/dialog'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 const config = createConfig({
   chains: [bsc],
@@ -56,7 +57,9 @@ function WalletWrapper() {
 
 function MainContent({ children }) {
   const { status } = useMetaMask()
-  if(status === 'connected' || globalThis.location.pathname === '/') return children
+  const pathname = usePathname()
+  console.log(pathname)
+  if(status === 'connected' || pathname === '/community') return children
   return <ConnectPage />
 }
 
@@ -92,15 +95,15 @@ export default function CustomWrapper({ children }) {
                   <div className='h-full bg-black'>
                     <ul className='flex gap-8 flex-col p-8 pt-20 pr-16'>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>Hutou挖矿</Link></li>
-                      <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/pslp'>LP质押分红</Link></li>
+                      <li className='cursor-pointer'><Link className='whitespace-nowrap' target='_blank' href='https://pancakeswap.finance/swap?inputCurrency=0xBC470E3d506df49e3498Dac3Df57d9DbB746CAa6'>LP质押分红</Link></li>
                       <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/usdt'>USDT理财</Link></li>
-                      <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>社区</Link></li>
-                      <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>合约地址</Link></li>
+                      <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/community'>社区</Link></li>
+                      {/* <li className='cursor-pointer'><Link className='whitespace-nowrap' href='/'>合约地址</Link></li> */}
                     </ul>
                     <hr className='border-[#131D59] border-t-2 my-2' />
                     <div className='flex gap-4 p-8'>
-                      <a className='cursor-pointer'><SVGIconQQ className='w-11' /></a>
-                      <a className='cursor-pointer'><SVGIconTelegram className='w-11' /></a>
+                      <a className='cursor-pointer' target='_blank' href='https://qm.qq.com/q/VHKxeQLsAg'><SVGIconQQ className='w-11' /></a>
+                      <a className='cursor-pointer' target='_blank' href='https://btok360.com/Hutou2024'><SVGIconTelegram className='w-11' /></a>
                     </div>
                   </div>
                 </menu>
