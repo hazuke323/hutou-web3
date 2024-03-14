@@ -4,6 +4,6 @@ export const Contract_Addr = IS_TEST ? '0x854a4f6f5227ad6C8Be5c4b89e2b5bd22fAb6f
 
 export const Contract_USDT_Addr = IS_TEST ? '0x337610d27c682e347c9cd60bd4b3b107c9d34ddd' : '0x55d398326f99059ff775485246999027b3197955'
 
-export const Contract_Hutou_Deposit_Addr = IS_TEST ? '0x207d185735B0c5068f719cc0FeFE4cfCF26E09A4' : ''
+export const Contract_Hutou_Deposit_Addr = IS_TEST ? '0x84646eCE8D8B1BBB57f6b345C02101dd8e763a75' : ''
 
 export const Contract_Hutou_Addr = IS_TEST ? '0x0d867894f34D38Bc0D0f4E60F156392bB722f61E' : ''
