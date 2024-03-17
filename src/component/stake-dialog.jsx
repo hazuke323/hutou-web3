@@ -16,7 +16,7 @@ export default function StakeDialog(
   const inputRef = useRef()
 
   return (
-    <div className='absolute -top-8 -bottom-8 w-full backdrop-blur'>
+    <div className='absolute -top-8 left-0 bottom-8 right-0 backdrop-blur'>
       <div className='absolute top-1/4 left-6 right-6 bg-[#A3B2FA] rounded-[21px] px-6 py-4'>
         <div className='flex flex-col gap-5'>
           <div className='text-black text-xl'>管理质押</div>
