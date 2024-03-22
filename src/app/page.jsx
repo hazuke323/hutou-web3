@@ -10,11 +10,29 @@ import hutoudepositabi from '../config/hutoudepositabi.json'
 import hutouabi from '../config/hutouabi.json'
 import { Contract_Hutou_Addr, Contract_Hutou_Deposit_Addr } from '../config/contract'
 
+const formatEndTime = ts => {
+  if (ts <= 0) {
+    return ''
+  }
+  const dayTime = 86400
+  const dayNum = Math.floor(ts / dayTime)
+  const hourNum = Math.floor((ts % dayTime) / 3600)
+  const minuteNum = Math.floor(((ts % dayTime) % 3600) / 60)
+  const secondsNum = ((ts % dayTime) % 3600) % 60
+
+  return (dayNum > 0 ? (dayNum + '天') : '')
+    + (hourNum > 0 ? (hourNum + '时') : '')
+    + (minuteNum > 0 ? (minuteNum + '分') : '')
+    + (secondsNum > 0 ? (secondsNum + '秒') : '')
+}
+
 export default function HuTouPage() {
   const [ showStakeDialog, setShowStakeDialog ] = useState(false)
   const [ deposited, setDeposited ] = useState(0)
   const [ duration, setDuration ] = useState(7*86400)
   const [ poolTokenBal, setPoolTokenBal ] = useState(0)
+  const [ poolStarttime, setPoolStarttime ] = useState(0)
+  const [ remainTxt, setRemainTxt ] = useState('')
   const [ userApproved, setUserApproved ] = useState(0)
   const [ userTokenBal, setUserTokenBal ] = useState(0)
   const [ userDeposited, setUserDeposited ] = useState(0)
@@ -27,6 +45,7 @@ export default function HuTouPage() {
 
   useEffect(() => {
     getPoolBal()
+    getPoolStart()
     getDuration()
     getTokenDeposited()
     getDepositStartTimestamp()
@@ -37,6 +56,10 @@ export default function HuTouPage() {
     getUserInterest()
 
   }, [account])
+
+  useEffect(() => {
+    updateRemainTime()
+  }, [poolStarttime])
 
   function getContract() {
     if (account && ethereum) {
@@ -74,13 +97,41 @@ export default function HuTouPage() {
     return Promise.reject('no account')
   }
 
+  function updateRemainTime() {
+    const txt = formatEndTime(poolStarttime + (365 * 10 * 86400) - Math.floor(Date.now() / 1000))
+    if (txt) {
+      setRemainTxt(txt)
+    }
+    setTimeout(() => {
+      updateRemainTime()
+    }, 500);
+  }
+
+  function getPoolStart() {
+    getContract()
+      .then(contract => {
+        return contract.deploy_time()
+      })
+      .then(stime => {
+        const st = Number(stime)
+        if (st) {
+          setPoolStarttime(st)
+        }
+      }, err => {
+        console.log('err', err)
+      })
+      .catch(e => {
+        console.log('e', e)
+      })
+  }
+
   function getTokenDeposited() {
     getContract()
       .then(contract => {
         return contract.staking_totalSupply()
       })
       .then(deposited => {
-        console.log('token deposited deposit', deposited, formatUnits(deposited))
+        // console.log('token deposited deposit', deposited, formatUnits(deposited))
         setDeposited(formatUnits(deposited))
       }, err => {
         console.log('err', err)
@@ -96,7 +147,7 @@ export default function HuTouPage() {
         return contract.balanceOf(Contract_Hutou_Deposit_Addr)
       })
       .then(bal => {
-        console.log('pool bal', bal, formatUnits(bal))
+        // console.log('pool bal', bal, formatUnits(bal))
 
         setPoolTokenBal(formatUnits(bal))
       }, err => {
@@ -112,7 +163,7 @@ export default function HuTouPage() {
       .then(contract => {
         contract.balanceOf(account)
           .then(res => {
-            console.log('res contract get', res, formatUnits(res))
+            // console.log('res contract get', res, formatUnits(res))
 
             setUserTokenBal(formatUnits(res))
           })
@@ -129,7 +180,7 @@ export default function HuTouPage() {
       .then(contract => {
         contract.allowance(account, Contract_Hutou_Deposit_Addr)
           .then(res => {
-            console.log('allowance wei', res, formatUnits(res))
+            // console.log('allowance wei', res, formatUnits(res))
             setUserApproved(formatUnits(res))
           })
       }, err => {
@@ -145,7 +196,7 @@ export default function HuTouPage() {
       .then(contract => {
         contract.approve(Contract_Hutou_Deposit_Addr, '115792089237316195423570985008687907853269984665640564039457584007913129639935')
           .then(res => {
-            console.log('授权成功', res)
+            // console.log('授权成功', res)
             
             // 更新授权数量
             getTokenAllowanceWei()
@@ -163,7 +214,7 @@ export default function HuTouPage() {
       .then(contract => {
         contract.stakeHutou(parseEther(String(amount)))
           .then(res => {
-            console.log('res', res)
+            // console.log('res', res)
 
             // 更新抵押数量
             getUserDeposit()
@@ -323,7 +374,7 @@ export default function HuTouPage() {
             onClick={ () => setShowStakeDialog(true) }
           >解锁HUTOU</Button>
           {/* <Button className='text-2xl'
-            onClick={() => ttt()}
+            onClick={() => getPoolStart()}
           >ttt</Button> */}
         </div>
         <div className='text-xs my-1'>质押后须10天才能取出，请注意控制风险</div>
@@ -340,8 +391,9 @@ export default function HuTouPage() {
           onClick={() => withdrawInterest() }
         >领取</Button>
         <div className='text-xl my-4'>矿池剩余总量：{poolTokenBal}</div>
-        {/* <div className='text-2xl my-4'>挖矿倒计时</div>
-        <div className='text-2xl my-1'>剩余 | 420 day 4 Hrs 20 Min</div> */}
+        <div className='text-2xl my-4'>挖矿倒计时</div>
+        <div className='text-2xl my-1'>剩余 | { remainTxt }</div>
+        {/* <div className='text-2xl my-1'>剩余 | 420 day 4 Hrs 20 Min</div> */}
       </div>
       { showStakeDialog && <StakeDialog
           info={ getStakeInfo() }
