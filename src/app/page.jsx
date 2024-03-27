@@ -142,16 +142,12 @@ export default function HuTouPage() {
   }
 
   function getPoolBal() {
-    getTokenContract()
+    getContract()
       .then(contract => {
-        return contract.balanceOf(Contract_Hutou_Deposit_Addr)
+        return contract.getMineAmount()
       })
       .then(bal => {
-        // console.log('pool bal', bal, formatUnits(bal))
-
         setPoolTokenBal(formatUnits(bal))
-      }, err => {
-        console.log('err', err)
       })
       .catch(e => {
         console.log('e', e)
